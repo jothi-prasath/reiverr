@@ -66,19 +66,20 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
 
-      - name: Build containers
-        run: docker buildx build -f docker-compose.yml -f docker-compose.prod.yml --platform=linux/amd64,linux/arm64 --target production --push --tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}} --cache-from=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache --cache-to=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
+#      - name: Build containers
+#        run: docker buildx build -f docker-compose.yml -f docker-compose.prod.yml --platform=linux/amd64,linux/arm64 --target production --push --tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}} --cache-from=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache --cache-to=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
 
-#      - name: Build and push Docker images
-#        uses: docker/build-push-action@v4
-#        with:
-#          context: .
-#          platforms: linux/amd64,linux/arm64
-#          tags: ${{ steps.meta.outputs.tags }}
-#          labels: ${{ steps.meta.outputs.labels }}
-#          #push: true
-#          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{env.IMAGE_NAME}}:buildcache
-#          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{env.IMAGE_NAME}}:buildcache,mode=max
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}}
+          labels: ${{ steps.meta.outputs.labels }}
+          target: production
+          push: true
+          cache-from: type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache
+          cache-to: type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
 
 #      - name: Add tag
 #        run: docker tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}}
