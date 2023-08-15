@@ -66,9 +66,6 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
 
-#      - name: Build containers
-#        run: docker buildx build -f docker-compose.yml -f docker-compose.prod.yml --platform=linux/amd64,linux/arm64 --target production --push --tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}} --cache-from=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache --cache-to=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
-
       - name: Build and push Docker images
         uses: docker/build-push-action@v4
         with:
@@ -80,14 +77,3 @@ jobs:
           push: true
           cache-from: type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache
           cache-to: type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
-
-#      - name: Add tag
-#        run: docker tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}}
-
-      # - name: Tag with Git SHA
-      #   run: docker tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{github.sha}}
-
-#      - name: Push to Docker Hub
-#        run: |
-#          docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}}
-#          docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest
