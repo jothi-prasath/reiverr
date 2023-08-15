@@ -59,12 +59,6 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GIT_TOKEN}}
 
-#      - name: Log in to Docker Hub
-#        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc
-#        with:
-#          username: ${{secrets.DOCKERHUB_USERNAME}}
-#          password: ${{secrets.DOCKERHUB_TOKEN}}
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
@@ -73,7 +67,7 @@ jobs:
             ghcr.io/${{ github.repository }}
 
       - name: Build containers
-        run: docker buildx build -f docker-compose.yml -f docker-compose.prod.yml --platform=linux/amd64,linux/arm64 --push --tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}} --cache-from=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache --cache-to=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
+        run: docker buildx build -f docker-compose.yml -f docker-compose.prod.yml --platform=linux/amd64,linux/arm64 --target production --push --tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}} --cache-from=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache --cache-to=type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
 
 #      - name: Build and push Docker images
 #        uses: docker/build-push-action@v4
