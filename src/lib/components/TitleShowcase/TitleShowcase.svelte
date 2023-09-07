@@ -10,11 +10,12 @@
 	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import type { TitleType } from '$lib/types';
-	import { openTitleModal } from '../Modal/Modal';
+	import { openTitleModal } from '../../stores/modal.store';
+	import { _ } from 'svelte-i18n';
 
 	const TRAILER_TIMEOUT = 3000;
 	const TRAILER_LOAD_TIME = 1000;
-	const ANIMATION_DURATION = 150;
+	const ANIMATION_DURATION = $settings.animationDuration;
 
 	export let tmdbId: number;
 	export let type: TitleType;
@@ -52,13 +53,15 @@
 		trailerVisible = false;
 		UIVisible = true;
 
-		timeout = setTimeout(() => {
-			trailerMounted = true;
-
+		if ($settings.autoplayTrailers) {
 			timeout = setTimeout(() => {
-				trailerVisible = true;
-			}, TRAILER_LOAD_TIME);
-		}, TRAILER_TIMEOUT - TRAILER_LOAD_TIME);
+				trailerMounted = true; // Mount the trailer
+
+				timeout = setTimeout(() => {
+					trailerVisible = true;
+				}, TRAILER_LOAD_TIME);
+			}, TRAILER_TIMEOUT - TRAILER_LOAD_TIME);
+		}
 	}
 
 	onMount(() => {
@@ -120,8 +123,12 @@
 			out:fade|global={{ duration: ANIMATION_DURATION }}
 		>
 			<div class="flex gap-4 items-center">
-				<Button size="lg" type="primary" on:click={() => openTitleModal(tmdbId, type)}>
-					<span>Details</span><ChevronRight size={20} />
+				<Button
+					size="lg"
+					type="primary"
+					on:click={() => openTitleModal({ type, id: tmdbId, provider: 'tmdb' })}
+				>
+					<span>{$_('titleShowcase.details')}</span><ChevronRight size={20} />
 				</Button>
 				{#if trailerId}
 					<Button
@@ -132,7 +139,7 @@
 						on:mouseover={() => (focusTrailer = true)}
 						on:mouseleave={() => (focusTrailer = false)}
 					>
-						<span>Watch Trailer</span><ChevronRight size={20} />
+						<span>{$_('titleShowcase.watchTrailer')}</span><ChevronRight size={20} />
 					</Button>
 				{/if}
 			</div>
@@ -140,8 +147,11 @@
 		<div class="hidden lg:flex items-end justify-end col-start-4 row-start-3 col-span-3">
 			<div class="flex gap-6 items-center">
 				<div>
-					<p class="text-zinc-400 text-sm font-medium">Release Date</p>
+					<p class="text-zinc-400 text-sm font-medium">
+						{$_('titleShowcase.releaseDate')}
+					</p>
 					<h2 class="font-semibold">
+						<!-- We need to format dates -->
 						{releaseDate.toLocaleDateString('en-US', {
 							year: 'numeric',
 							month: 'long',
@@ -151,7 +161,9 @@
 				</div>
 				{#if director}
 					<div>
-						<p class="text-zinc-400 text-sm font-medium">Directed By</p>
+						<p class="text-zinc-400 text-sm font-medium">
+							{$_('titleShowcase.directedBy')}
+						</p>
 						<h2 class="font-semibold">{director}</h2>
 					</div>
 				{/if}

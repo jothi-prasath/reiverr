@@ -26,9 +26,22 @@ For a list of planned features & known bugs, see [Reiverr Taskboard](https://git
 
 # Installation
 
-The easiest and the recommended way to insstall Reiverr is via docker-compose. Make sure to update the api keys and base URLs to match your setup.
+The easiest and the recommended way to install Reiverr is via Docker. Make sure to update the api keys and base URLs to match your setup.
 
 Radarr & Sonarr API keys can be found under Settings > General in their respective web UIs. Jellyfin API key is located under Administration > Dashboard > Advanced > API Keys in the Jellyfin Web UI.
+
+### Docker CLI
+
+```sh
+docker run -it --init \
+  --name reiverr \
+  --restart unless-stopped \
+  -p 9494:9494 \
+  -v /path/to/appdata/config:/config \
+  ghcr.io/aleksilassila/reiverr:latest
+```
+
+### Docker compose
 
 ```yaml
 version: '3.8'
@@ -41,19 +54,31 @@ services:
     container_name: reiverr
     ports:
       - 9494:9494
-    environment:
-      PUBLIC_RADARR_API_KEY: yourapikeyhere
-      PUBLIC_RADARR_BASE_URL: http://127.0.0.1:7878
-      PUBLIC_SONARR_API_KEY: yourapikeyhere
-      PUBLIC_SONARR_BASE_URL: http://127.0.0.1:8989
-      PUBLIC_JELLYFIN_API_KEY: yourapikeyhere
-      PUBLIC_JELLYFIN_BASE_URL: http://127.0.0.1:8096
+    volumes:
+      - /path/to/appdata/config:/config
     restart: unless-stopped
 ```
 
+### Manual Instructions
+
+1. Requirements:
+   - Node v18.14.0 or high
+   - NPM v9.3.1 or high
+1. Clone from **master** or download the [latest source](https://github.com/aleksilassila/reiverr/releases)
+1. Build the app:
+   ```sh
+   npm ci --ignore-scripts
+   npm run build
+   npm ci --ignore-scripts --omit=dev # optional
+   ```
+1. Start the app:
+   ```sh
+   npm run deploy
+   ```
+
 ### Reiverr will be accessible via port 9494 by default.
 
-If you have any questions or run into issues or bugs, you can start a [discussion](https://github.com/aleksilassila/reiverr/discussions) or open an [issue](https://github.com/aleksilassila/reiverr/issues).
+If you have any questions or run into issues or bugs, you can start a [discussion](https://github.com/aleksilassila/reiverr/discussions), open an [issue](https://github.com/aleksilassila/reiverr/issues) or check out the [Discord channel](https://discord.gg/enypPQh6pz).
 
 ## Other Platforms
 
@@ -73,7 +98,9 @@ Before you contribute:
 
 - If you are taking on an existing bug or feature ticket, please comment on the issue or mark yourself as an assignee to avoid multiple people working on the same thing.
 - If the ticket is vague or missing information, please ask for clarification in the comments.
-- UI style must match the rest of the project and it is a good idea to discuss the design beforehand, especially for larger design choices (issues labelled with "design")
+- UI style must match the rest of the project and it is a good idea to discuss the design beforehand, especially for larger design choices (issues labelled with "design").
+- [Conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) are encouraged.
+- When creating a pull request, please make sure to target the `dev` branch and mark the PR as a draft if it is a work in progress.
 
 I'm not a designer, so if you have any ideas for improving the UI, I'd love to learn about them. If you are a designer and would like to help, contributions are much appreciated!
 
@@ -81,30 +108,12 @@ I'm not a designer, so if you have any ideas for improving the UI, I'd love to l
 
 To get started with development:
 
-1. Clone the repo
-2. Add and populate `.env` file
+1. Clone the repository
+2. Check out the `dev` branch
 3. Run `npm install`
 4. Run `npm run dev`
 
 Alternatively, you can run `docker-compose up`.
-
-Example .env file:
-
-```env
-# The PUBLIC_ prefix is required for SvelteKit to expose the variable to the web browser.
-# If you are exposing the server to the internet (not recommended), you should use HTTPS.
-
-# Fill in the blanks and change the base URLs to match your setup.
-
-PUBLIC_RADARR_API_KEY=yourapikeyhere
-PUBLIC_RADARR_BASE_URL=http://127.0.0.1:7878
-
-PUBLIC_SONARR_API_KEY=yourapikeyhere
-PUBLIC_SONARR_BASE_URL=http://127.0.0.1:8989
-
-PUBLIC_JELLYFIN_API_KEY=yourapikeyhere
-PUBLIC_JELLYFIN_BASE_URL=http://127.0.0.1:8096
-```
 
 For Webstorm users: I'd recommend using VS Code as it has way better Svelte Typescript support.
 
