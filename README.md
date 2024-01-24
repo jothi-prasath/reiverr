@@ -1,8 +1,14 @@
 # Reiverr
 
+![Stargazers](https://img.shields.io/github/stars/aleksilassila/reiverr)
+![GitHub issues](https://img.shields.io/github/issues/aleksilassila/reiverr)
+![Discord](https://img.shields.io/discord/923259625145524354)
+![Version](https://ghcr-badge.egpl.dev/aleksilassila/reiverr/latest_tag?color=%2344cc11&ignore=latest&label=version&trim=)
+![Size](https://ghcr-badge.egpl.dev/aleksilassila/reiverr/size?color=%2344cc11&tag=latest&label=image+size&trim=)
+
 Reiverr is a project that aims to create a single UI for interacting with TMDB, Jellyfin, Radarr and Sonarr, as well as be an alternative to Overseerr.
 
-This project is still in alpha, and many features are still missing. Contributions are welcome! See [contributing](#Contributing) for more information.
+This project is still in alpha, and many features are still missing / being tested and changed. Contributions are welcome! See [contributing](#Contributing) for more information.
 
 ![Demo Videi](images/reiverr-demo.gif)
 
@@ -90,6 +96,10 @@ The roadmap includes plans to support the following platforms in the future:
 
 # Contributing
 
+## Read these if youre planning to contribute:
+- [Project State Discussion December 23](https://github.com/aleksilassila/reiverr/issues/98)
+- ([State of the project 25. Sep 23](https://github.com/aleksilassila/reiverr/discussions/27#discussioncomment-7101012))
+
 Unlike the most Servarr projects, this one is built with Svelte and SvelteKit. If you haven't used Svelte before, don't worry, this was my first Svelte project too. I'd recommend reading the official [Svelte tutorial](https://learn.svelte.dev/tutorial/welcome-to-svelte) to get started.
 
 To see a list of missing features & known bugs that you can help with, see [Reiverr Taskboard](https://github.com/users/aleksilassila/projects/5). Feel free to also create your own issues for bug reports or feature requests, as well as discussions for general questions.
@@ -128,8 +138,10 @@ Useful resources:
 
 # Additional Screenshots
 
-![Landing Page](images/screenshot-1.png)
+![Library Page](images/screenshot-1.png)
 
-![Series Page](images/screenshot-2.png)
+![Discover Genre Page](images/screenshot-2.png)
 
-![Library Page](images/screenshot-3.png)
+![Discover Page](images/screenshot-3.png)
+
+![Settings Page](images/screenshot-4.png)
