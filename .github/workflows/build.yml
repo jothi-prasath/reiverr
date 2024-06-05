@@ -1,6 +1,7 @@
 name: Build & Deploy
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - v*
@@ -45,23 +46,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2.9.1
+
       - name: 'Login to GitHub Container Registry'
         uses: docker/login-action@v2
         with:
           registry: ${{env.REGISTRY}}
           username: ${{github.actor}}
-          password: ${{secrets.GITHUB_TOKEN}}
+          password: ${{secrets.GIT_TOKEN}}
 
-      - name: Build containers
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
 
-      - name: Add tag
-        run: docker tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest,${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}}
+          labels: ${{ steps.meta.outputs.labels }}
+          target: production
+          push: true
+          cache-from: type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache
+          cache-to: type=registry,ref=${{env.REGISTRY}}/${{env.IMAGE_NAME}}:buildcache,mode=max
 
-      # - name: Tag with Git SHA
-      #   run: docker tag ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{github.sha}}
-
-      - name: Push to Docker Hub
-        run: |
-          docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{env.TAG}}
-          docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest
+      - name: Send Discord Notif
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          #content: "Honeypots Docker image has been pushed to repo."
+          title: "CI"
+          description: "Build and pushed Docker image"
+          color: 0x0000ff
+          url: "https://github.com/just5ky/reiverr"
+          username: GitHub Actions
+          avatar_url: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/github.png
